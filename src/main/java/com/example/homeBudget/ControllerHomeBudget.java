@@ -313,10 +313,10 @@ public class ControllerHomeBudget implements Initializable {
         Purchases purchase = purchasesTableView.getSelectionModel().getSelectedItem(); //get item from tableView
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Warning!");
-        alert.setHeaderText("Usunięcie zakupu");
+        alert.setHeaderText("Remove purchase");
         //check if item from table view is not null
         try {
-            alert.setContentText("Na pewno chcesz usunąć zakup?\n" +
+            alert.setContentText("Are you sure you want to delete this purchase?\n" +
                     purchase.getId() + "\t" + purchase.getDate() + "\t" + purchase.getShop() + "\t" + purchase.getCategory() +  "\t " +
                     purchase.getPrice());
             Optional<ButtonType> result = alert.showAndWait();
@@ -898,3 +898,6 @@ public class ControllerHomeBudget implements Initializable {
 //TODO add changing table view (income, purchase)
 //TODO change view of combobox in tableView
 //TODO improve removing shop & category (show which rows will be deleted)
+//TODO price, amount > 0
+//TODO only letters in shop and category
+//TODO can't remove category if there is only one

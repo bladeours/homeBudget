@@ -18,7 +18,7 @@ public class Database {
     private static Connection connection;
     public Database() throws ClassNotFoundException, SQLException {
 
-        File f = new File("D:\\OneDrive\\projekty\\homeBudget\\shopping.db");
+        File f = new File("db\\shopping.db");
         if(!f.exists()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Connection error");
@@ -26,7 +26,7 @@ public class Database {
             alert.showAndWait();
         }else{
             Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:D:\\OneDrive\\projekty\\homeBudget\\shopping.db");
+            connection = DriverManager.getConnection("jdbc:sqlite:db\\shopping.db");
         }
 
     }
