@@ -48,12 +48,6 @@
         <ScrollPane fx:id="settingsScrollPane" managed="false" visible="false" fitToWidth="true">
             <VBox fx:id="settingsVbox" alignment="TOP_CENTER" >
                 <VBox styleClass="tiles">
-                    <HBox alignment="CENTER">
-                        <Label>Use Server</Label>
-                        <ToggleSwitch fx:id="useServerSwitch"/>
-                    </HBox>
-                </VBox>
-                <VBox styleClass="tiles">
                     <Label>Add category</Label>
                     <HBox alignment="CENTER" spacing="10">
                         <TextField fx:id="addCategoryTextField" promptText="New category"/>

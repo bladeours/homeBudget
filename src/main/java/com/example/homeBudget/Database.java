@@ -1,8 +1,10 @@
 package com.example.homeBudget;
 
+import javafx.scene.control.Alert;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -15,8 +17,18 @@ import java.util.Locale;
 public class Database {
     private static Connection connection;
     public Database() throws ClassNotFoundException, SQLException {
-        Class.forName("org.sqlite.JDBC");
-        connection = DriverManager.getConnection("jdbc:sqlite:D:\\OneDrive\\projekty\\homeBudget\\shopping.db");
+
+        File f = new File("D:\\OneDrive\\projekty\\homeBudget\\shopping.db");
+        if(!f.exists()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Connection error");
+            alert.setContentText("Can't connect with database!");
+            alert.showAndWait();
+        }else{
+            Class.forName("org.sqlite.JDBC");
+            connection = DriverManager.getConnection("jdbc:sqlite:D:\\OneDrive\\projekty\\homeBudget\\shopping.db");
+        }
+
     }
 
     public String showPurchases() throws SQLException {

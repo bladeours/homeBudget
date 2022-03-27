@@ -19,6 +19,8 @@ import javafx.scene.layout.VBox;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.sqlite.SQLiteException;
+
 import java.io.*;
 import java.net.ConnectException;
 import java.net.Socket;
@@ -117,28 +119,10 @@ public class ControllerHomeBudget implements Initializable {
     private ObservableList<Purchases> purchasesObservableList = FXCollections.observableArrayList();
     private ObservableList<Incomes> IncomesObservableList = FXCollections.observableArrayList();
 
-    private boolean useLocalDatabase = true;
     Database database = new Database();
 
     public ControllerHomeBudget() throws IOException, SQLException, ClassNotFoundException {
-        boolean connected = false;
-        //try connect to server
-        while (!connected && !useLocalDatabase){
-            try {
-                socket = new Socket("localhost",8080);
-                bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                connected = true;
-            }catch (ConnectException e){
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Błąd połączenia");
-                alert.setContentText("Nie można połączyć z serwerem!\n" + e);
-                alert.showAndWait();
-            }
-        }
-        //add purchases to TableView
         updatePurchaseTable();
-
     }
 
     @Override
@@ -163,22 +147,6 @@ public class ControllerHomeBudget implements Initializable {
         dateIncomeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 
         updateBudget();
-        //add listener to listening if use Server switch channged. If yes then switch to local database/server
-        useServerSwitch.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
-                useLocalDatabase = !newValue;
-                try {
-                    updatePurchaseTable();
-                } catch (IOException |SQLException |NullPointerException ignore) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setContentText("Can't connect to server");
-                    alert.showAndWait();
-                    useServerSwitch.setSelected(false);
-                }
-            }
-        });
 
         shopPurchaseColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent>() {
             @Override
@@ -360,13 +328,7 @@ public class ControllerHomeBudget implements Initializable {
                 JSONObject removePurchaseJson = new JSONObject();
                 removePurchaseJson.put("action","removePurchase");
                 removePurchaseJson.put("id",purchase.getId());
-                if(useLocalDatabase){
-                    database.removePurchase(removePurchaseJson.toString());
-                }
-                else{
-                    sendToServer(bw,removePurchaseJson.toString());
-                }
-
+                database.removePurchase(removePurchaseJson.toString());
                 updatePurchaseTable();
             }
         }catch (NullPointerException | SQLException e) {
@@ -444,7 +406,7 @@ public class ControllerHomeBudget implements Initializable {
         String amount = amountTextField.getText();
         amount = amount.replace(",",".");
 
-        //check if values are properly set and send to server
+        //check if values are properly set and send to database
         if(incomeDateDatePicker.getValue() == null
                 || incomeCategoryComboBox.getValue() == null || amountTextField.getText().equals("")){
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -489,13 +451,8 @@ public class ControllerHomeBudget implements Initializable {
                 JSONObject removeIncomeJson = new JSONObject();
                 removeIncomeJson.put("action","removeIncome");
                 removeIncomeJson.put("id",income.getId());
-                if(useLocalDatabase){
-                    database.removeIncome(removeIncomeJson.toString());
-                }
-                else{
-                    sendToServer(bw,removeIncomeJson.toString());
-                }
 
+                database.removeIncome(removeIncomeJson.toString());
                 updateIncomesTable();
             }
         }catch (NullPointerException | SQLException e) {
@@ -528,15 +485,7 @@ public class ControllerHomeBudget implements Initializable {
         String[] months = {"January", "February", "March", "April",
                 "May", "June", "July", "August", "September",
                 "November", "October", "December"};
-        JSONObject showStatsJson = new JSONObject();
-        if(useLocalDatabase){
-            showStatsJson = new JSONObject(database.showStats());
-        }
-        else{
-            showStatsJson.put("action","showStats");
-            sendToServer(bw,showStatsJson.toString()); //sending to server query to show statistics
-            showStatsJson = new JSONObject(br.readLine()); //read statistics from server
-        }
+        JSONObject showStatsJson = new JSONObject(database.showStats());
         //creating array with months (int) then sort it
         JSONArray monthsJsonArray = showStatsJson.names();
         ArrayList<Integer> monthsArray = new ArrayList<>();
@@ -644,7 +593,7 @@ public class ControllerHomeBudget implements Initializable {
         String price = priceTextField.getText();
         price = price.replace(",",".");
 
-        //check if values are properly set and send to server
+        //check if values are properly set and send to database
         if(dateDatePicker.getValue() == null || (shopComboBox.getValue() == null && shopTextField.getText().equals(""))
                 || categoryComboBox.getValue() == null || priceTextField.getText().equals("")){
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -784,26 +733,11 @@ public class ControllerHomeBudget implements Initializable {
         }
     }
 
-    private void sendToServer(BufferedWriter bw,String result) throws IOException {
-        bw.write(result);
-        bw.newLine();
-        bw.flush();
-    }
-
     protected void updatePurchaseTable() throws IOException, SQLException {
         purchasesObservableList.clear();
         JSONObject allPurchaseJson;
+        allPurchaseJson = new JSONObject(database.showPurchases());
 
-        //use localDatabase or connect with server
-        if(useLocalDatabase){
-            allPurchaseJson = new JSONObject(database.showPurchases());
-        }
-        else{
-            JSONObject showPurchaseJson = new JSONObject();
-            showPurchaseJson.put("action","showPurchases");
-            sendToServer(bw,showPurchaseJson.toString());
-            allPurchaseJson = new JSONObject(br.readLine());
-        }
 
         JSONObject purchaseJson;
         Iterator<String> keys = allPurchaseJson.keys();
@@ -840,16 +774,7 @@ public class ControllerHomeBudget implements Initializable {
         IncomesObservableList.clear();
         JSONObject allPurchaseJson;
 
-        //use localDatabase or connect with server
-        if(useLocalDatabase){
-            allPurchaseJson = new JSONObject(database.showIncomes());
-        }
-        else{
-            JSONObject showPurchaseJson = new JSONObject();
-            showPurchaseJson.put("action","showPurchases");
-            sendToServer(bw,showPurchaseJson.toString());
-            allPurchaseJson = new JSONObject(br.readLine());
-        }
+        allPurchaseJson = new JSONObject(database.showIncomes());
 
         JSONObject incomeJson;
         Iterator<String> keys = allPurchaseJson.keys();
@@ -972,7 +897,6 @@ public class ControllerHomeBudget implements Initializable {
 
 //TODO add started budget
 //TODO change sorting category to "usage sorting"
-//TODO remove "server"
 //TODO clear on github
 //TODO improve removing from table
 //TODO add clearing table
