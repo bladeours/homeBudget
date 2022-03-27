@@ -108,11 +108,11 @@
     -fx-max-width: 50px;
 }
 
-#amountTextField{
+#amountTextField, #budgetTextField{
     -fx-max-width: 65;
 }
 
-#addCategoryButton ,#removeCategoryButton, #removeShopButton, #removeIncomeCategoryButton
+#addCategoryButton ,#removeCategoryButton, #removeShopButton, #removeIncomeCategoryButton, #editBudgetButton
 ,#addIncomeCategoryButton {
     -fx-pref-width: 75px;
 }

@@ -55,6 +55,8 @@ public class ControllerHomeBudget implements Initializable {
     @FXML
     private TextField addIncomeCategoryTextField;
     @FXML
+    private TextField budgetTextField;
+    @FXML
     private Label budgetAmount = new Label();
     @FXML
     private VBox menuVBox;
@@ -85,8 +87,6 @@ public class ControllerHomeBudget implements Initializable {
     @FXML
     private VBox settingsVbox;
     @FXML
-    private ToggleSwitch useServerSwitch;
-    @FXML
     private TextField addCategoryTextField;
     @FXML
     private ScrollPane settingsScrollPane;
@@ -106,10 +106,6 @@ public class ControllerHomeBudget implements Initializable {
     private TableColumn datePurchaseColumn;
     private VBox vBoxStatsAll = new VBox();
     private ScrollPane scrollPaneStats = new ScrollPane();
-    private BufferedWriter bw;
-    private  BufferedReader br;
-    private int itemToEdit, incomeItemToEdit;
-    private Socket socket;
     private ObservableList<String> shopList = FXCollections.observableArrayList();
     private ObservableList<String> categoryList = FXCollections.observableArrayList();
     private ObservableList<String> shopListTableView = FXCollections.observableArrayList();
@@ -311,7 +307,7 @@ public class ControllerHomeBudget implements Initializable {
     }
 
     @FXML
-    protected void removePurchase() throws IOException, InterruptedException {
+    protected void removePurchase() throws IOException{
 
         rightVBox.getChildren().remove(scrollPaneStats); //remove stats view
         Purchases purchase = purchasesTableView.getSelectionModel().getSelectedItem(); //get item from tableView
@@ -360,30 +356,17 @@ public class ControllerHomeBudget implements Initializable {
     }
 
     @FXML
-    protected void addIncome() throws SQLException, IOException {
+    protected void addIncome() {
 
         incomeMenu.setVisible(false);
         incomeMenu.setManaged(false);
         addIncomeVBox.setManaged(true);
         addIncomeVBox.setVisible(true);
         addIncomeButton.setText("Add");
-        JSONObject categoryJson = new JSONObject(database.makeJSonIncomeCategory());
-        //receive categories
-        try{
-            categoryJson = categoryJson.getJSONArray("category").getJSONObject(0);
-            JSONArray key = categoryJson.names();
-            for (int i = 0; i < key.length(); ++i) {
-                String keys = key.getString(i);
-                String value = categoryJson.getString(keys);
-                incomeCategoryList.add(value);
-            }
-            incomeCategoryList = incomeCategoryList.sorted();
-            incomeCategoryComboBox.setItems(incomeCategoryList);
-            incomeCategoryComboBox.setValue(incomeCategoryList.get(0));
-        }
-        catch (RuntimeException ignore){
-        }
 
+        incomeCategoryList = incomeCategoryList.sorted();
+        incomeCategoryComboBox.setItems(incomeCategoryList);
+        incomeCategoryComboBox.setValue(incomeCategoryList.get(0));
         incomeDateDatePicker.setValue(LocalDate.now());
 
     }
@@ -400,7 +383,6 @@ public class ControllerHomeBudget implements Initializable {
     protected void addIncomeToDatabase() throws SQLException, IOException {
         JSONObject data = new JSONObject();
 
-        data.put("id",incomeItemToEdit);
         data.put("date",incomeDateDatePicker.getValue().toString());
         data.put("category",incomeCategoryComboBox.getValue());
         String amount = amountTextField.getText();
@@ -472,7 +454,7 @@ public class ControllerHomeBudget implements Initializable {
     }
 
     @FXML
-    public void showStats() throws IOException, SQLException {
+    public void showStats() throws SQLException {
         //setting GUI
         purchasesTableViewVBox.setManaged(false);
         purchasesTableViewVBox.setVisible(false);
@@ -556,6 +538,8 @@ public class ControllerHomeBudget implements Initializable {
         addIncomeCategoryTextField.setText("");
         addIncomeCategoryTextField.setPromptText("New Category");
 
+        budgetTextField.setText(database.showInitialBudget());
+
         categoryList = updatePurchaseCategoryList(false);
         categoryComboBoxRemove.setItems(categoryList);
         categoryComboBoxRemove.setValue(categoryList.get(0));
@@ -579,7 +563,6 @@ public class ControllerHomeBudget implements Initializable {
     protected void addToDatabase() throws IOException, SQLException, ParseException { //adding or edit in database
         JSONObject data = new JSONObject();
 
-        data.put("id",itemToEdit);
         data.put("date",dateDatePicker.getValue().toString());
         if(!shopTextField.getText().equals("")){
             String shopCapital = shopTextField.getText().substring(0,1).toUpperCase() +
@@ -617,7 +600,7 @@ public class ControllerHomeBudget implements Initializable {
             else{
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Data error");
-                alert.setContentText("Field \"Price\" contain number!");
+                alert.setContentText("Field \"Price\" must contain number!");
                 alert.showAndWait();
             }
         }
@@ -696,7 +679,7 @@ public class ControllerHomeBudget implements Initializable {
         try{
             String categoryCapital = addIncomeCategoryTextField.getText().substring(0,1).toUpperCase() +
                     addIncomeCategoryTextField.getText().substring(1).toLowerCase();
-            database.addIncomeCategoryToDatabase(categoryCapital); //TODO add first capital letter
+            database.addIncomeCategoryToDatabase(categoryCapital);
             showSettings();
         }
         catch (SQLException e){
@@ -730,6 +713,19 @@ public class ControllerHomeBudget implements Initializable {
                 alert.showAndWait();
             }
             updateIncomesTable();
+        }
+    }
+
+    @FXML
+    private void editBudget() throws SQLException {
+        if(isNumeric(budgetTextField.getText())){
+            database.editInitialBudget(budgetTextField.getText());
+            updateBudget();
+        }else{
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Data error");
+            alert.setContentText("Field \"Initial budget\" must contain number!");
+            alert.showAndWait();
         }
     }
 
@@ -897,8 +893,8 @@ public class ControllerHomeBudget implements Initializable {
 
 //TODO add started budget
 //TODO change sorting category to "usage sorting"
-//TODO clear on github
 //TODO improve removing from table
 //TODO add clearing table
-//TODO repair Category in add income!
+//TODO add changing table view (income, purchase)
+//TODO change view of combobox in tableView
 //TODO improve removing shop & category (show which rows will be deleted)

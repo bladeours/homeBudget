@@ -372,5 +372,19 @@ public class Database {
         resultSet.next();
         return resultSet.getString("budget");
     }
+
+    public String showInitialBudget() throws SQLException {
+        Statement stmt = connection.createStatement();
+        ResultSet resultSet = stmt.executeQuery("select * from Budget");
+        resultSet.next();
+
+        return resultSet.getString("amount");
+    }
+
+    public void editInitialBudget(String newValue) throws SQLException {
+        PreparedStatement stmt = connection.prepareStatement("update Budget set amount=?;");
+        stmt.setObject(1,newValue);
+        stmt.executeUpdate();
+    }
 }
 
