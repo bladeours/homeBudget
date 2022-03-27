@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.cell.*?>
+<?import javafx.scene.layout.*?>
+
+<?import org.controlsfx.control.ToggleSwitch?>
+<HBox fx:id="background" alignment="CENTER" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.homeBudget.ControllerHomeBudget">
+    <VBox fx:id="leftVBox" alignment="TOP_CENTER">
+        <VBox fx:id="menuVBox" alignment="TOP_CENTER">
+                    <Button fx:id="purchaseButton" contentDisplay="BOTTOM" onAction="#showPurchaseMenu">Purchases</Button>
+                    <Button fx:id="incomeButton" contentDisplay="BOTTOM" onAction="#showIncomeMenu">Incomes</Button>
+                    <Button fx:id="statsButton" contentDisplay="BOTTOM" onAction="#showStats">Statistics</Button>
+                    <Button fx:id="settingsButton" contentDisplay="BOTTOM" onAction="#showSettings">Settings</Button>
+                    <Button fx:id="exitButton" contentDisplay="BOTTOM" onAction="#exit">Exit</Button>
+        </VBox>
+        <VBox fx:id="purchaseMenu" visible="false" managed="false" alignment="TOP_CENTER">
+            <Button fx:id="addPurchaseButton" contentDisplay="BOTTOM" onAction="#addPurchase">Add purchase</Button>
+            <Button fx:id="removePurchaseButton" contentDisplay="BOTTOM" onAction="#removePurchase">Remove purchase</Button>
+            <Button onAction="#backToMenu">Back to menu</Button>
+        </VBox>
+        <VBox fx:id="incomeMenu" visible="false" managed="false" alignment="TOP_CENTER">
+            <Button contentDisplay="BOTTOM" onAction="#addIncome">Add income</Button>
+            <Button contentDisplay="BOTTOM" onAction="#removeIncome">Remove income</Button>
+            <Button onAction="#backToMenu">Back to menu</Button>
+        </VBox>
+        <VBox fx:id="addVBox" alignment="TOP_CENTER" managed="false" visible="false">
+            <VBox styleClass="tiles">
+                <Label text="Date" />
+                <DatePicker fx:id="dateDatePicker" />
+            </VBox>
+            <VBox styleClass="tiles">
+                <Label text="Shop" />
+                <ComboBox fx:id="shopComboBox" />
+                <TextField fx:id="shopTextField"  promptText="New shop"/>
+            </VBox>
+            <VBox styleClass="tiles">
+                <Label text="Category" />
+                <ComboBox fx:id="categoryComboBox" />
+            </VBox>
+            <VBox styleClass="tiles">
+                <Label text="Price" />
+                <TextField fx:id="priceTextField" promptText="Price" />
+            </VBox>
+            <Button fx:id="addButton" onAction="#addToDatabase">Add</Button>
+            <Button onAction="#showPurchaseMenu">Back to menu</Button>
+        </VBox>
+        <ScrollPane fx:id="settingsScrollPane" managed="false" visible="false" fitToWidth="true">
+            <VBox fx:id="settingsVbox" alignment="TOP_CENTER" >
+                <VBox styleClass="tiles">
+                    <HBox alignment="CENTER">
+                        <Label>Use Server</Label>
+                        <ToggleSwitch fx:id="useServerSwitch"/>
+                    </HBox>
+                </VBox>
+                <VBox styleClass="tiles">
+                    <Label>Add category</Label>
+                    <HBox alignment="CENTER" spacing="10">
+                        <TextField fx:id="addCategoryTextField" promptText="New category"/>
+                        <Button fx:id="addCategoryButton" onAction="#addPurchaseCategory">Add</Button>
+                    </HBox>
+                </VBox>
+                <VBox styleClass="tiles">
+                    <Label>Remove category</Label>
+                    <HBox alignment="CENTER" spacing="10">
+                        <ComboBox fx:id="categoryComboBoxRemove" />
+                        <Button fx:id="removeCategoryButton" onAction="#removePurchaseCategory">Remove</Button>
+                    </HBox>
+                </VBox>
+                <VBox styleClass="tiles">
+                    <Label>Remove shop</Label>
+                    <HBox alignment="CENTER" spacing="10">
+                        <ComboBox fx:id="shopComboBoxRemove" />
+                        <Button fx:id="removeShopButton" onAction="#removeShop">Remove</Button>
+                    </HBox>
+                </VBox>
+                <VBox styleClass="tiles">
+                    <Label>Add income category</Label>
+                    <HBox alignment="CENTER" spacing="10">
+                        <TextField fx:id="addIncomeCategoryTextField" promptText="New category"/>
+                        <Button fx:id="addIncomeCategoryButton" onAction="#addIncomeCategory">Add</Button>
+                    </HBox>
+                </VBox>
+                <VBox styleClass="tiles">
+                    <Label>Remove income category</Label>
+                    <HBox alignment="CENTER" spacing="10">
+                        <ComboBox fx:id="incomeCategoryComboBoxRemove" />
+                        <Button fx:id="removeIncomeCategoryButton" onAction="#removeIncomeCategory">Remove</Button>
+                    </HBox>
+                </VBox>
+                <Button onAction="#backToMenu">Back to menu</Button>
+
+
+
+            </VBox>
+        </ScrollPane>
+        <VBox fx:id="addIncomeVBox" alignment="TOP_CENTER" visible="false" managed="false">
+            <VBox styleClass="tiles">
+                <Label text="Date" />
+                <DatePicker fx:id="incomeDateDatePicker" />
+            </VBox>
+            <VBox styleClass="tiles">
+                <Label text="Category" />
+                <ComboBox fx:id="incomeCategoryComboBox" />
+            </VBox>
+            <VBox styleClass="tiles">
+                <Label text="Price" />
+                <TextField fx:id="amountTextField" promptText="Amount" />
+            </VBox>
+            <Button fx:id="addIncomeButton" onAction="#addIncomeToDatabase">Add</Button>
+            <Button onAction="#showIncomeMenu">Back to menu</Button>
+        </VBox>
+    </VBox>
+    <VBox fx:id="rightVBox" >
+        <HBox minWidth="450" alignment="CENTER">
+            <Label fx:id="budgetLabel" text="Budget: " />
+            <Label fx:id="budgetAmount">0 zł</Label>
+        </HBox>
+        <VBox fx:id="purchasesTableViewVBox">
+            <TableView fx:id="purchasesTableView" minHeight="520">
+                <columns>
+                    <TableColumn maxWidth="40" minWidth="40" text="ID">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="id" />
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="Date" fx:id="datePurchaseColumn">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="date" />
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="Shop" fx:id="shopPurchaseColumn">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="shop" />
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn prefWidth="84.0" text="Category" fx:id="categoryPurchaseColumn">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="category" />
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn maxWidth="60" minWidth="60" text="Price" fx:id="pricePurchaseColumn">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="price" />
+                        </cellValueFactory>
+                    </TableColumn>
+                </columns>
+            </TableView>
+        </VBox>
+        <VBox fx:id="incomesTableViewVBox" visible="false" managed="false" alignment="CENTER">
+            <TableView fx:id="incomesTableView">
+                <columns>
+                    <TableColumn maxWidth="40" minWidth="40" text="ID">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="id" />
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="Date">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="date" fx:id="dateIncomeColumn" />
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="Category" minWidth="150" maxWidth="150" fx:id="categoryIncomeColumn" >
+                        <cellValueFactory>
+                            <PropertyValueFactory property="category" />
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn maxWidth="90" minWidth="90" text="Amount" fx:id="amountIncomeColumn">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="amount" />
+                        </cellValueFactory>
+                    </TableColumn>
+                </columns>
+            </TableView>
+        </VBox>
+    </VBox>
+</HBox>
