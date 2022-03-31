@@ -156,9 +156,9 @@
                             <PropertyValueFactory property="id" />
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn text="Date"  fx:id="dateIncomeColumn" >
+                    <TableColumn text="Date"  fx:id="dateIncomeColumn">
                         <cellValueFactory>
-                            <PropertyValueFactory property="date"/>
+                            <PropertyValueFactory property="date" />
                         </cellValueFactory>
                     </TableColumn>
                     <TableColumn text="Category" minWidth="150" maxWidth="150" fx:id="categoryIncomeColumn" >
