@@ -118,7 +118,12 @@ public class ControllerHomeBudget implements Initializable {
     Database database = new Database();
 
     public ControllerHomeBudget() throws IOException, SQLException, ClassNotFoundException {
-        updatePurchaseTable();
+        try {
+            updatePurchaseTable();
+        }catch (Exception e){
+            System.out.println("jest blad " + e);
+        }
+
     }
 
     @Override
@@ -294,7 +299,11 @@ public class ControllerHomeBudget implements Initializable {
         shopList = updateShopList(false);
         dateDatePicker.setValue(LocalDate.now());
         shopComboBox.setItems(shopList);
-        shopComboBox.setValue(shopList.get(0));
+        try {
+            shopComboBox.setValue(shopList.get(0));
+
+        }catch (IndexOutOfBoundsException ignore){
+        }
 
     }
 
@@ -307,40 +316,47 @@ public class ControllerHomeBudget implements Initializable {
     }
 
     @FXML
-    protected void removePurchase() throws IOException{
-
+    protected void removePurchase() throws IOException, SQLException {
         rightVBox.getChildren().remove(scrollPaneStats); //remove stats view
-        Purchases purchase = purchasesTableView.getSelectionModel().getSelectedItem(); //get item from tableView
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Warning!");
-        alert.setHeaderText("Remove purchase");
-        //check if item from table view is not null
-        try {
-            alert.setContentText("Are you sure you want to delete this purchase?\n" +
-                    purchase.getId() + "\t" + purchase.getDate() + "\t" + purchase.getShop() + "\t" + purchase.getCategory() +  "\t " +
-                    purchase.getPrice());
+
+        JSONObject removePurchaseJson = new JSONObject();
+        JSONArray idsToRemove = new JSONArray();
+        StringBuilder alertString = new StringBuilder();
+        int i = 0;
+        for (Purchases purchase: purchasesObservableList) {
+            if(purchase.getSelect().isSelected()){
+                if(i < 5){
+                    alertString.append(purchase).append("\n");
+                }
+                idsToRemove.put(purchase.getId());
+                i++;
+            }
+        }
+        if(i == 0){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Nothing to do");
+            alert.setHeaderText("Information");
+            alert.setContentText("You didn't select any purchase");
+            alert.showAndWait();
+        }
+        else{
+            if(i >= 5){
+                alertString.append("...and ").append(i - 5).append(" more row(s)").append("\n");
+            }
+            removePurchaseJson.put("id",idsToRemove);
+
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Warning!");
+            alert.setHeaderText("Remove purchase(s)");
+            alert.setContentText("Are you sure you want to remove these purchase(s)?\n" +
+                    alertString);
             Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK){
-                JSONObject removePurchaseJson = new JSONObject();
-                removePurchaseJson.put("action","removePurchase");
-                removePurchaseJson.put("id",purchase.getId());
+            if (result.get() == ButtonType.OK) {
                 database.removePurchase(removePurchaseJson.toString());
                 updatePurchaseTable();
             }
-        }catch (NullPointerException | SQLException e) {
-            if (!purchasesTableView.isVisible()){
-                purchasesTableView.setVisible(true);
-                purchasesTableView.setManaged(true);
-            }
-            else{
-                alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Remove error");
-                alert.setContentText("You have to select purchase to remove it!");
-                alert.showAndWait();
-            }
-
         }
-        purchasesTableView.getSelectionModel().clearSelection();
+
     }
 
     @FXML
@@ -417,40 +433,81 @@ public class ControllerHomeBudget implements Initializable {
     }
 
     @FXML
-    protected void removeIncome() throws IOException{
+    protected void removeIncome() throws IOException, SQLException {
         rightVBox.getChildren().remove(scrollPaneStats); //remove stats view
-        Incomes income = incomesTableView.getSelectionModel().getSelectedItem(); //get item from tableView
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Warning!");
-        alert.setHeaderText("Removing income");
-        //check if item from table view is not null
-        try {
-            alert.setContentText("Are you sure that you want remove?\n" +
-                    income.getId() + "\t" + income.getDate()  + "\t" + income.getCategory() +  "\t " +
-                    income.getAmount());
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK){
-                JSONObject removeIncomeJson = new JSONObject();
-                removeIncomeJson.put("action","removeIncome");
-                removeIncomeJson.put("id",income.getId());
 
+        JSONObject removeIncomeJson = new JSONObject();
+        JSONArray idsToRemove = new JSONArray();
+        StringBuilder alertString = new StringBuilder();
+        int i = 0;
+        for (Incomes income: IncomesObservableList) {
+            if(income.getSelect().isSelected()){
+                if(i < 5){
+                    alertString.append(income).append("\n");
+                }
+                idsToRemove.put(income.getId());
+                i++;
+            }
+        }
+        if(i == 0){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Nothing to do");
+            alert.setHeaderText("Information");
+            alert.setContentText("You didn't select any income");
+            alert.showAndWait();
+        }
+        else {
+            if (i >= 5) {
+                alertString.append("...and ").append(i - 5).append(" more row(s)").append("\n");
+            }
+            removeIncomeJson.put("id", idsToRemove);
+
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Warning!");
+            alert.setHeaderText("Remove income(s)");
+            alert.setContentText("Are you sure you want to remove these income(s)?\n" +
+                    alertString);
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
                 database.removeIncome(removeIncomeJson.toString());
+                System.out.println(removeIncomeJson);
                 updateIncomesTable();
             }
-        }catch (NullPointerException | SQLException e) {
-            if (!incomesTableView.isVisible()){
-                incomesTableView.setVisible(true);
-                incomesTableView.setManaged(true);
-            }
-            else{
-                alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Remove error");
-                alert.setContentText("You have to select income to remove it!");
-                alert.showAndWait();
-            }
-
         }
-        purchasesTableView.getSelectionModel().clearSelection();
+
+//        rightVBox.getChildren().remove(scrollPaneStats); //remove stats view
+//        Incomes income = incomesTableView.getSelectionModel().getSelectedItem(); //get item from tableView
+//        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+//        alert.setTitle("Warning!");
+//        alert.setHeaderText("Removing income");
+//        //check if item from table view is not null
+//        try {
+//            alert.setContentText("Are you sure that you want remove?\n" +
+//                    income.getId() + "\t" + income.getDate()  + "\t" + income.getCategory() +  "\t " +
+//                    income.getAmount());
+//            Optional<ButtonType> result = alert.showAndWait();
+//            if (result.get() == ButtonType.OK){
+//                JSONObject removeIncomeJson = new JSONObject();
+//                removeIncomeJson.put("action","removeIncome");
+//                removeIncomeJson.put("id",income.getId());
+//
+//                database.removeIncome(removeIncomeJson.toString());
+//                updateIncomesTable();
+//            }
+//        }catch (NullPointerException | SQLException e) {
+//            if (!incomesTableView.isVisible()){
+//                incomesTableView.setVisible(true);
+//                incomesTableView.setManaged(true);
+//            }
+//            else{
+//                alert = new Alert(Alert.AlertType.ERROR);
+//                alert.setTitle("Remove error");
+//                alert.setContentText("You have to select income to remove it!");
+//                alert.showAndWait();
+//            }
+//
+//        }
+//        purchasesTableView.getSelectionModel().clearSelection();
     }
 
     @FXML
@@ -542,15 +599,24 @@ public class ControllerHomeBudget implements Initializable {
 
         categoryList = updatePurchaseCategoryList(false);
         categoryComboBoxRemove.setItems(categoryList);
-        categoryComboBoxRemove.setValue(categoryList.get(0));
+        try{
+            categoryComboBoxRemove.setValue(categoryList.get(0));
+
+        }catch (IndexOutOfBoundsException ignore){}
 
         shopList = updateShopList(false);
         shopComboBoxRemove.setItems(shopList);
-        shopComboBoxRemove.setValue(shopList.get(0));
+        try{
+            shopComboBoxRemove.setValue(shopList.get(0));
+
+        }catch (IndexOutOfBoundsException ignore){}
 
         incomeCategoryList = updateIncomeCategorylist(false);
         incomeCategoryComboBoxRemove.setItems(incomeCategoryList);
-        incomeCategoryComboBoxRemove.setValue(incomeCategoryList.get(0));
+        try {
+            incomeCategoryComboBoxRemove.setValue(incomeCategoryList.get(0));
+
+        }catch (IndexOutOfBoundsException ignore){}
 
     }
 
@@ -774,7 +840,7 @@ public class ControllerHomeBudget implements Initializable {
                 String category = purchaseJson.optString("category");
                 String shop = purchaseJson.optString("shop");
                 String price = String.format("%.2f",purchaseJson.optFloat("price"));
-                purchasesObservableList.add(new Purchases(i , date, shop, category, price + " zł"));
+                purchasesObservableList.add(new Purchases(i , date, shop, category, price + " zł", new CheckBox()));
             }
             catch (JSONException ignored){
             }
@@ -810,7 +876,7 @@ public class ControllerHomeBudget implements Initializable {
                 String date = incomeJson.optString("date");
                 String category = incomeJson.optString("category");
                 String amount = String.format("%.2f",incomeJson.optFloat("amount"));
-                IncomesObservableList.add(new Incomes(i , date, category, amount + " zł"));
+                IncomesObservableList.add(new Incomes(i , date, category, amount + " zł",new CheckBox()));
             }
             catch (JSONException ignored){
             }
@@ -831,14 +897,17 @@ public class ControllerHomeBudget implements Initializable {
         JSONObject shopJson;
         shopJson = new JSONObject(database.makeJSonShop());
         JSONArray key;
-        shopJson = shopJson.getJSONArray("shop").getJSONObject(0);
-        key = shopJson.names();
-        for (int i = 0; i < key.length(); ++i) {
-            String keys = key.getString(i);
-            String value = shopJson.getString(keys);
-            shopListTableView.add(value);
-            shopList.add(value);
-        }
+        try{
+            shopJson = shopJson.getJSONArray("shop").getJSONObject(0);
+            key = shopJson.names();
+            for (int i = 0; i < key.length(); ++i) {
+                String keys = key.getString(i);
+                String value = shopJson.getString(keys);
+                shopListTableView.add(value);
+                shopList.add(value);
+            }
+        }catch (JSONException ignore){}
+
         if(tableView){
             shopListTableView = shopListTableView.sorted();
             return shopListTableView;
@@ -853,14 +922,19 @@ public class ControllerHomeBudget implements Initializable {
         JSONObject categoryJson = new JSONObject(database.makeJSonCategory());
         JSONArray key;
         //receive categories
-        categoryJson = categoryJson.getJSONArray("category").getJSONObject(0);
-        key = categoryJson.names();
-        for (int i = 0; i < key.length(); ++i) {
-            String keys = key.getString(i);
-            String value = categoryJson.getString(keys);
-            categoryList.add(value);
-            categoryListTableView.add(value);
+        try {
+            categoryJson = categoryJson.getJSONArray("category").getJSONObject(0);
+            key = categoryJson.names();
+            for (int i = 0; i < key.length(); ++i) {
+                String keys = key.getString(i);
+                String value = categoryJson.getString(keys);
+                categoryList.add(value);
+                categoryListTableView.add(value);
+            }
+        }catch (JSONException ignore){
+//            System.out.println(e);
         }
+
         if(tableView){
             categoryListTableView = categoryListTableView.sorted();
             return categoryListTableView;
@@ -920,4 +994,3 @@ public class ControllerHomeBudget implements Initializable {
 //TODO add clearing table
 //TODO change view of combobox in tableView
 //TODO improve removing shop & category (show which rows will be deleted)
-//TODO can't remove category if there is only one

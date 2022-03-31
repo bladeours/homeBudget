@@ -55,20 +55,6 @@
                     </HBox>
                 </VBox>
                 <VBox styleClass="tiles">
-                    <Label>Add category</Label>
-                    <HBox alignment="BASELINE_RIGHT" spacing="30">
-                        <TextField fx:id="addCategoryTextField" promptText="New category"/>
-                        <Button fx:id="addCategoryButton" onAction="#addPurchaseCategory">Add</Button>
-                    </HBox>
-                </VBox>
-                <VBox styleClass="tiles">
-                    <Label>Remove category</Label>
-                    <HBox alignment="BASELINE_RIGHT" spacing="10">
-                        <ComboBox fx:id="categoryComboBoxRemove" />
-                        <Button fx:id="removeCategoryButton" onAction="#removePurchaseCategory">Remove</Button>
-                    </HBox>
-                </VBox>
-                <VBox styleClass="tiles">
                     <Label>Remove shop</Label>
                     <HBox alignment="BASELINE_RIGHT" spacing="10">
                         <ComboBox fx:id="shopComboBoxRemove" />
@@ -76,14 +62,23 @@
                     </HBox>
                 </VBox>
                 <VBox styleClass="tiles">
-                    <Label>Add income category</Label>
+                    <Label>Purchase category</Label>
+                    <HBox alignment="BASELINE_RIGHT" spacing="30">
+                        <TextField fx:id="addCategoryTextField" promptText="New category"/>
+                        <Button fx:id="addCategoryButton" onAction="#addPurchaseCategory">Add</Button>
+                    </HBox>
+                    <HBox alignment="BASELINE_RIGHT" spacing="10">
+                        <ComboBox fx:id="categoryComboBoxRemove" />
+                        <Button fx:id="removeCategoryButton" onAction="#removePurchaseCategory">Remove</Button>
+                    </HBox>
+                </VBox>
+
+                <VBox styleClass="tiles">
+                    <Label>Income category</Label>
                     <HBox alignment="BASELINE_RIGHT" spacing="30">
                         <TextField fx:id="addIncomeCategoryTextField" promptText="New category"/>
                         <Button fx:id="addIncomeCategoryButton" onAction="#addIncomeCategory">Add</Button>
                     </HBox>
-                </VBox>
-                <VBox styleClass="tiles">
-                    <Label>Remove income category</Label>
                     <HBox alignment="BASELINE_RIGHT" spacing="10">
                         <ComboBox fx:id="incomeCategoryComboBoxRemove" />
                         <Button fx:id="removeIncomeCategoryButton" onAction="#removeIncomeCategory">Remove</Button>
@@ -120,6 +115,11 @@
         <VBox fx:id="purchasesTableViewVBox">
             <TableView fx:id="purchasesTableView" minHeight="520">
                 <columns>
+                    <TableColumn maxWidth="40" minWidth="40" text="V">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="select" />
+                        </cellValueFactory>
+                    </TableColumn>
                     <TableColumn maxWidth="40" minWidth="40" text="ID">
                         <cellValueFactory>
                             <PropertyValueFactory property="id" />
@@ -151,6 +151,11 @@
         <VBox fx:id="incomesTableViewVBox" visible="false" managed="false" alignment="CENTER">
             <TableView fx:id="incomesTableView">
                 <columns>
+                    <TableColumn maxWidth="40" minWidth="40" text="V">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="select" />
+                        </cellValueFactory>
+                    </TableColumn>
                     <TableColumn maxWidth="40" minWidth="40" text="ID">
                         <cellValueFactory>
                             <PropertyValueFactory property="id" />

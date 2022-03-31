@@ -2,6 +2,7 @@ package com.example.homeBudget;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.CheckBox;
 
 public class Purchases {
     private SimpleIntegerProperty id = new SimpleIntegerProperty(0);
@@ -9,16 +10,18 @@ public class Purchases {
     private SimpleStringProperty shop = new SimpleStringProperty("");
     private  SimpleStringProperty category = new SimpleStringProperty("");
     private SimpleStringProperty price = new SimpleStringProperty("");
+    private CheckBox select = new CheckBox();
 
     public Purchases(){
     }
 
-    public Purchases(int id, String date, String shop, String category, String price) {
+    public Purchases(int id, String date, String shop, String category, String price, CheckBox select) {
         setId(id);
         setDate(date);
         setShop(shop);
         setCategory(category);
         setPrice(price);
+        setSelect(select);
     }
 
     public int getId() {
@@ -59,5 +62,19 @@ public class Purchases {
 
     public void setPrice(String price) {
         this.price.set(price);
+    }
+
+    public CheckBox getSelect(){
+        return select;
+    }
+
+    public void setSelect(CheckBox select){
+        this.select = select;
+    }
+
+    @Override
+    public String toString() {
+        return id.get() + "\t" + date.get() + "\t" + shop.get() + "\t" + category.get() +  "\t " +
+                price.get();
     }
 }

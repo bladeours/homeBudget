@@ -180,10 +180,13 @@ public class Database {
 
     public void removePurchase(String idToRemove) throws SQLException {
         JSONObject removePurchaseJson = new JSONObject(idToRemove);
-        int id = removePurchaseJson.optInt("id");
+        JSONArray idsToRemove = new JSONArray(removePurchaseJson.getJSONArray("id"));
+        for(int i=0;i<idsToRemove.length();i++){
+        int id = idsToRemove.getInt(i);
         Statement stmt = connection.createStatement();
         String sql = "DELETE FROM \"Purchases\" WHERE id = " + id + ";";
         stmt.executeUpdate(sql);
+        }
     }
 
     public void addPurchaseCategoryToDatabase(String category) throws SQLException {
@@ -357,17 +360,21 @@ public class Database {
 
     public void removeIncome(String idToRemove) throws SQLException {
         JSONObject removeIncomeJson = new JSONObject(idToRemove);
-        int id = removeIncomeJson.optInt("id");
-        Statement stmt = connection.createStatement();
-        String sql = "DELETE FROM \"Incomes\" WHERE id = " + id + ";";
-        stmt.executeUpdate(sql);
+        JSONArray idsToRemove = new JSONArray(removeIncomeJson.getJSONArray("id"));
+        for(int i=0;i<idsToRemove.length();i++) {
+            int id = idsToRemove.optInt(i);
+            Statement stmt = connection.createStatement();
+            String sql = "DELETE FROM \"Incomes\" WHERE id = " + id + ";";
+            stmt.executeUpdate(sql);
+        }
     }
 
     public String showBudget() throws SQLException {
         Statement stmt = connection.createStatement();
-        ResultSet resultSet = stmt.executeQuery("select (budget - purchases + incomes) as budget from (select sum(Incomes.amount) as incomes,\n" +
-                                                            "(select Budget.amount from Budget) as budget,\n" +
-                                                            "(select sum(price) from Purchases) as purchases\n" +
+        ResultSet resultSet = stmt.executeQuery("select (budget - purchases + incomes) as budget from" +
+                                                            " (select ifnull(sum(Incomes.amount),0)  as incomes,\n" +
+                                                            "(select ifnull(Budget.amount,0) from Budget) as budget,\n" +
+                                                            "(select ifnull(sum(price),0) from Purchases) as purchases\n" +
                                                             "from Incomes);");
         resultSet.next();
         return resultSet.getString("budget");
