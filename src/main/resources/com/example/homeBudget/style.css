@@ -115,6 +115,7 @@
 #addCategoryButton ,#removeCategoryButton, #removeShopButton, #removeIncomeCategoryButton, #editBudgetButton
 ,#addIncomeCategoryButton {
     -fx-pref-width: 75px;
+
 }
 
 #addCategoryTextField, #addIncomeCategoryTextField{
@@ -337,3 +338,6 @@
     -fx-background-color: white;
 }
 
+#categoryComboBoxRemove, #shopComboBoxRemove, #incomeCategoryComboBoxRemove{
+    -fx-pref-width: 120px;
+}

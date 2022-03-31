@@ -397,7 +397,7 @@ public class ControllerHomeBudget implements Initializable {
             alert.showAndWait();
         }
         else{
-            if (isNumeric(amount)){ //check if amount is a number
+            if (isNumeric(amount) && Float.parseFloat(amount) > 0){ //check if amount is a number
                 data.put("amount",amount);
                 database.addIncome(data.toString());
 
@@ -409,7 +409,7 @@ public class ControllerHomeBudget implements Initializable {
             else{
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Data error");
-                alert.setContentText("Field \"Amount\" must contain number!");
+                alert.setContentText("Field \"Amount\" must contain number and be > 0!");
                 alert.showAndWait();
             }
         }
@@ -585,7 +585,7 @@ public class ControllerHomeBudget implements Initializable {
             alert.showAndWait();
         }
         else{
-            if (isNumeric(price)){ //check if price is a number
+            if (isNumeric(price) && Float.parseFloat(price) > 0){ //check if price is a number and if is > 0
                 data.put("price",price);
                 database.addPurchase(data);
 
@@ -600,7 +600,7 @@ public class ControllerHomeBudget implements Initializable {
             else{
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Data error");
-                alert.setContentText("Field \"Price\" must contain number!");
+                alert.setContentText("Field \"Price\" must contain number and be > 0!");
                 alert.showAndWait();
             }
         }
@@ -608,18 +608,28 @@ public class ControllerHomeBudget implements Initializable {
 
     @FXML
     private void addPurchaseCategory() throws IOException {
-        try{
-            String categoryCapital = addCategoryTextField.getText().substring(0,1).toUpperCase() +
-                    addCategoryTextField.getText().substring(1).toLowerCase();
-            database.addPurchaseCategoryToDatabase(categoryCapital);
-            showSettings();
+        if(isAlpha(addCategoryTextField.getText()))
+        {
+            try{
+                String categoryCapital = addCategoryTextField.getText().substring(0,1).toUpperCase() +
+                        addCategoryTextField.getText().substring(1).toLowerCase();
+                database.addPurchaseCategoryToDatabase(categoryCapital);
+                showSettings();
+            }
+            catch (SQLException e){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Duplicate");
+                alert.setContentText("there is already a category \""+addCategoryTextField.getText()+"\"!");
+                alert.showAndWait();
+            }
         }
-        catch (SQLException e){
+        else{
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Duplicate");
-            alert.setContentText("there is already a category \""+addCategoryTextField.getText()+"\"!");
+            alert.setTitle("illegal characters");
+            alert.setContentText("You can only use letters in Category!");
             alert.showAndWait();
         }
+        addCategoryTextField.setText("");
     }
 
     @FXML
@@ -676,18 +686,28 @@ public class ControllerHomeBudget implements Initializable {
 
     @FXML
     private void addIncomeCategory()throws IOException {
-        try{
-            String categoryCapital = addIncomeCategoryTextField.getText().substring(0,1).toUpperCase() +
-                    addIncomeCategoryTextField.getText().substring(1).toLowerCase();
-            database.addIncomeCategoryToDatabase(categoryCapital);
-            showSettings();
+        if(isAlpha(addIncomeCategoryTextField.getText())){
+            try{
+                String categoryCapital = addIncomeCategoryTextField.getText().substring(0,1).toUpperCase() +
+                        addIncomeCategoryTextField.getText().substring(1).toLowerCase();
+                database.addIncomeCategoryToDatabase(categoryCapital);
+                showSettings();
+            }
+            catch (SQLException e){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Duplicate");
+                alert.setContentText("there is already a category \""+addIncomeCategoryTextField.getText()+"\"!");
+                alert.showAndWait();
+            }
         }
-        catch (SQLException e){
+        else{
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Duplicate");
-            alert.setContentText("there is already a category \""+addIncomeCategoryTextField.getText()+"\"!");
+            alert.setTitle("illegal characters");
+            alert.setContentText("You can only use letters in Category!");
             alert.showAndWait();
         }
+        addIncomeCategoryTextField.setText("");
+
     }
 
     @FXML
@@ -888,16 +908,16 @@ public class ControllerHomeBudget implements Initializable {
         }
         return true;
     }
+
+    private boolean isAlpha(String name) {
+        return name.matches("[a-zA-Z]+");
+    }
 }
 
 
-//TODO add started budget
 //TODO change sorting category to "usage sorting"
 //TODO improve removing from table
 //TODO add clearing table
-//TODO add changing table view (income, purchase)
 //TODO change view of combobox in tableView
 //TODO improve removing shop & category (show which rows will be deleted)
-//TODO price, amount > 0
-//TODO only letters in shop and category
 //TODO can't remove category if there is only one
