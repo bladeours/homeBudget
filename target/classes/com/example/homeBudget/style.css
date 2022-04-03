@@ -162,8 +162,6 @@
 }
 
 .table-view .table-row-cell{
-    -fx-text-fill: red;
-    /*-fx-text-background-color:#d0d0d0;*/
     -fx-text-background-color:white;
 }
 
@@ -340,4 +338,13 @@
 
 #categoryComboBoxRemove, #shopComboBoxRemove, #incomeCategoryComboBoxRemove{
     -fx-pref-width: 120px;
+}
+
+.check-box .box{
+    -fx-background-color: white ;
+}
+.check-box:selected .mark {
+
+    -fx-background-color: #4676f0;
+
 }

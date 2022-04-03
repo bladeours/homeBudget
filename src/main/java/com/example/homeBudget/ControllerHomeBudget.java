@@ -12,18 +12,14 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
-import org.controlsfx.control.ToggleSwitch;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.sqlite.SQLiteException;
 
 import java.io.*;
-import java.net.ConnectException;
-import java.net.Socket;
 import java.net.URL;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -104,6 +100,12 @@ public class ControllerHomeBudget implements Initializable {
     private TableColumn dateIncomeColumn;
     @FXML
     private TableColumn datePurchaseColumn;
+    @FXML
+    private TableColumn selectPurchaseColumn;
+    @FXML
+    private TableColumn selectIncomeColumn;
+    private CheckBox selectAllPurchaseCheckbox;
+    private CheckBox selectAllIncomeCheckbox;
     private VBox vBoxStatsAll = new VBox();
     private ScrollPane scrollPaneStats = new ScrollPane();
     private ObservableList<String> shopList = FXCollections.observableArrayList();
@@ -113,11 +115,14 @@ public class ControllerHomeBudget implements Initializable {
     private ObservableList<String> incomeCategoryList = FXCollections.observableArrayList();
     private ObservableList<String> incomeCategoryListTableView = FXCollections.observableArrayList();
     private ObservableList<Purchases> purchasesObservableList = FXCollections.observableArrayList();
-    private ObservableList<Incomes> IncomesObservableList = FXCollections.observableArrayList();
+    private ObservableList<Incomes> incomesObservableList = FXCollections.observableArrayList();
+
 
     Database database = new Database();
 
-    public ControllerHomeBudget() throws IOException, SQLException, ClassNotFoundException {
+    public ControllerHomeBudget() throws SQLException, ClassNotFoundException {
+        selectAllPurchaseCheckbox = new CheckBox();
+        selectAllIncomeCheckbox = new CheckBox();
         try {
             updatePurchaseTable();
         }catch (Exception e){
@@ -128,9 +133,12 @@ public class ControllerHomeBudget implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        selectPurchaseColumn.setGraphic(selectAllPurchaseCheckbox);
+        selectIncomeColumn.setGraphic(selectAllIncomeCheckbox);
         purchasesTableView.setItems(purchasesObservableList);
         purchasesTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        incomesTableView.setItems(IncomesObservableList);
+        incomesTableView.setItems(incomesObservableList);
         incomesTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         purchasesTableView.setEditable(true);
         incomesTableView.setEditable(true);
@@ -148,6 +156,24 @@ public class ControllerHomeBudget implements Initializable {
         dateIncomeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 
         updateBudget();
+
+        selectAllPurchaseCheckbox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
+                for (Purchases purchase:purchasesObservableList) {
+                    purchase.getSelect().setSelected(newValue);
+                }
+            }
+        });
+
+        selectAllIncomeCheckbox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
+                for (Incomes income: incomesObservableList) {
+                    income.getSelect().setSelected(newValue);
+                }
+            }
+        });
 
         shopPurchaseColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent>() {
             @Override
@@ -318,7 +344,7 @@ public class ControllerHomeBudget implements Initializable {
     @FXML
     protected void removePurchase() throws IOException, SQLException {
         rightVBox.getChildren().remove(scrollPaneStats); //remove stats view
-
+        boolean removeAllPurchases = true;
         JSONObject removePurchaseJson = new JSONObject();
         JSONArray idsToRemove = new JSONArray();
         StringBuilder alertString = new StringBuilder();
@@ -330,6 +356,8 @@ public class ControllerHomeBudget implements Initializable {
                 }
                 idsToRemove.put(purchase.getId());
                 i++;
+            }else{
+                removeAllPurchases = false;
             }
         }
         if(i == 0){
@@ -347,9 +375,17 @@ public class ControllerHomeBudget implements Initializable {
 
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Warning!");
-            alert.setHeaderText("Remove purchase(s)");
-            alert.setContentText("Are you sure you want to remove these purchase(s)?\n" +
-                    alertString);
+            if(removeAllPurchases){
+                alert.setHeaderText("Remove all purchases");
+                alert.setContentText("Are you sure you want to remove all purchases?");
+                removePurchaseJson.put("removeAll",true);
+            }else{
+                alert.setHeaderText("Remove purchase(s)");
+                alert.setContentText("Are you sure you want to remove these purchase(s)?\n" +
+                        alertString);
+                removePurchaseJson.put("removeAll",false);
+
+            }
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
                 database.removePurchase(removePurchaseJson.toString());
@@ -436,17 +472,20 @@ public class ControllerHomeBudget implements Initializable {
     protected void removeIncome() throws IOException, SQLException {
         rightVBox.getChildren().remove(scrollPaneStats); //remove stats view
 
+        boolean removeAllIncomes = true;
         JSONObject removeIncomeJson = new JSONObject();
         JSONArray idsToRemove = new JSONArray();
         StringBuilder alertString = new StringBuilder();
         int i = 0;
-        for (Incomes income: IncomesObservableList) {
+        for (Incomes income: incomesObservableList) {
             if(income.getSelect().isSelected()){
                 if(i < 5){
                     alertString.append(income).append("\n");
                 }
                 idsToRemove.put(income.getId());
                 i++;
+            }else{
+                removeAllIncomes = false;
             }
         }
         if(i == 0){
@@ -464,9 +503,18 @@ public class ControllerHomeBudget implements Initializable {
 
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Warning!");
-            alert.setHeaderText("Remove income(s)");
-            alert.setContentText("Are you sure you want to remove these income(s)?\n" +
-                    alertString);
+            if(removeAllIncomes){
+                alert.setHeaderText("Remove all incomes");
+                alert.setContentText("Are you sure you want to remove all incomes?");
+                removeIncomeJson.put("removeAll",true);
+            }
+            else{
+                alert.setHeaderText("Remove income(s)");
+                alert.setContentText("Are you sure you want to remove these income(s)?\n" +
+                        alertString);
+                removeIncomeJson.put("removeAll",false);
+            }
+
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
                 database.removeIncome(removeIncomeJson.toString());
@@ -474,40 +522,6 @@ public class ControllerHomeBudget implements Initializable {
                 updateIncomesTable();
             }
         }
-
-//        rightVBox.getChildren().remove(scrollPaneStats); //remove stats view
-//        Incomes income = incomesTableView.getSelectionModel().getSelectedItem(); //get item from tableView
-//        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-//        alert.setTitle("Warning!");
-//        alert.setHeaderText("Removing income");
-//        //check if item from table view is not null
-//        try {
-//            alert.setContentText("Are you sure that you want remove?\n" +
-//                    income.getId() + "\t" + income.getDate()  + "\t" + income.getCategory() +  "\t " +
-//                    income.getAmount());
-//            Optional<ButtonType> result = alert.showAndWait();
-//            if (result.get() == ButtonType.OK){
-//                JSONObject removeIncomeJson = new JSONObject();
-//                removeIncomeJson.put("action","removeIncome");
-//                removeIncomeJson.put("id",income.getId());
-//
-//                database.removeIncome(removeIncomeJson.toString());
-//                updateIncomesTable();
-//            }
-//        }catch (NullPointerException | SQLException e) {
-//            if (!incomesTableView.isVisible()){
-//                incomesTableView.setVisible(true);
-//                incomesTableView.setManaged(true);
-//            }
-//            else{
-//                alert = new Alert(Alert.AlertType.ERROR);
-//                alert.setTitle("Remove error");
-//                alert.setContentText("You have to select income to remove it!");
-//                alert.showAndWait();
-//            }
-//
-//        }
-//        purchasesTableView.getSelectionModel().clearSelection();
     }
 
     @FXML
@@ -846,14 +860,16 @@ public class ControllerHomeBudget implements Initializable {
             }
         }
         updateBudget();
+        selectAllPurchaseCheckbox.setSelected(false);
     }
 
     protected void updateIncomesTable() throws SQLException, IOException {
+        selectAllIncomeCheckbox.setSelected(false);
         incomesTableViewVBox.setVisible(true);
         incomesTableViewVBox.setManaged(true);
         purchasesTableViewVBox.setVisible(false);
         purchasesTableViewVBox.setManaged(false);
-        IncomesObservableList.clear();
+        incomesObservableList.clear();
         JSONObject allPurchaseJson;
 
         allPurchaseJson = new JSONObject(database.showIncomes());
@@ -870,13 +886,13 @@ public class ControllerHomeBudget implements Initializable {
         }
         //iterate through purchases by id
         for (int i = 1; i <= maxID; i++){
-            //try catch is because there may not be a purchase with id because it has been deleted
+            //try catch is because there may not be a income with id because it has been deleted
             try{
                 incomeJson = allPurchaseJson.getJSONObject(Integer.toString(i));
                 String date = incomeJson.optString("date");
                 String category = incomeJson.optString("category");
                 String amount = String.format("%.2f",incomeJson.optFloat("amount"));
-                IncomesObservableList.add(new Incomes(i , date, category, amount + " zł",new CheckBox()));
+                incomesObservableList.add(new Incomes(i , date, category, amount + " zł",new CheckBox()));
             }
             catch (JSONException ignored){
             }
@@ -994,3 +1010,4 @@ public class ControllerHomeBudget implements Initializable {
 //TODO add clearing table
 //TODO change view of combobox in tableView
 //TODO improve removing shop & category (show which rows will be deleted)
+//TODO improve alert while removing

@@ -85,9 +85,6 @@
                     </HBox>
                 </VBox>
                 <Button onAction="#backToMenu">Back to menu</Button>
-
-
-
             </VBox>
         </ScrollPane>
         <VBox fx:id="addIncomeVBox" alignment="TOP_CENTER" visible="false" managed="false">
@@ -100,7 +97,7 @@
                 <ComboBox fx:id="incomeCategoryComboBox" />
             </VBox>
             <VBox styleClass="tiles">
-                <Label text="Price" />
+                <Label text="Amount" />
                 <TextField fx:id="amountTextField" promptText="Amount" />
             </VBox>
             <Button fx:id="addIncomeButton" onAction="#addIncomeToDatabase">Add</Button>
@@ -115,7 +112,7 @@
         <VBox fx:id="purchasesTableViewVBox">
             <TableView fx:id="purchasesTableView" minHeight="520">
                 <columns>
-                    <TableColumn maxWidth="40" minWidth="40" text="V">
+                    <TableColumn maxWidth="40" minWidth="40" fx:id="selectPurchaseColumn">
                         <cellValueFactory>
                             <PropertyValueFactory property="select" />
                         </cellValueFactory>
@@ -151,7 +148,7 @@
         <VBox fx:id="incomesTableViewVBox" visible="false" managed="false" alignment="CENTER">
             <TableView fx:id="incomesTableView">
                 <columns>
-                    <TableColumn maxWidth="40" minWidth="40" text="V">
+                    <TableColumn maxWidth="40" minWidth="40" fx:id="selectIncomeColumn">
                         <cellValueFactory>
                             <PropertyValueFactory property="select" />
                         </cellValueFactory>

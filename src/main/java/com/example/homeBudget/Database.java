@@ -180,13 +180,21 @@ public class Database {
 
     public void removePurchase(String idToRemove) throws SQLException {
         JSONObject removePurchaseJson = new JSONObject(idToRemove);
-        JSONArray idsToRemove = new JSONArray(removePurchaseJson.getJSONArray("id"));
-        for(int i=0;i<idsToRemove.length();i++){
-        int id = idsToRemove.getInt(i);
-        Statement stmt = connection.createStatement();
-        String sql = "DELETE FROM \"Purchases\" WHERE id = " + id + ";";
-        stmt.executeUpdate(sql);
+        if(removePurchaseJson.optBoolean("removeAll")){
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate("DELETE FROM \"Purchases\"");
+            stmt.executeUpdate("DELETE FROM sqlite_sequence WHERE name='Purchases';");
         }
+        else{
+            JSONArray idsToRemove = new JSONArray(removePurchaseJson.getJSONArray("id"));
+            for(int i=0;i<idsToRemove.length();i++){
+                int id = idsToRemove.getInt(i);
+                PreparedStatement stmt = connection.prepareStatement("DELETE FROM \"Purchases\" WHERE id =?;");
+                stmt.setObject(1,id);
+                stmt.executeUpdate();
+            }
+        }
+
     }
 
     public void addPurchaseCategoryToDatabase(String category) throws SQLException {
@@ -360,12 +368,19 @@ public class Database {
 
     public void removeIncome(String idToRemove) throws SQLException {
         JSONObject removeIncomeJson = new JSONObject(idToRemove);
-        JSONArray idsToRemove = new JSONArray(removeIncomeJson.getJSONArray("id"));
-        for(int i=0;i<idsToRemove.length();i++) {
-            int id = idsToRemove.optInt(i);
+        if(removeIncomeJson.optBoolean("removeAll")){
             Statement stmt = connection.createStatement();
-            String sql = "DELETE FROM \"Incomes\" WHERE id = " + id + ";";
-            stmt.executeUpdate(sql);
+            stmt.executeUpdate("DELETE FROM \"Incomes\";");
+            stmt.executeUpdate("DELETE FROM sqlite_sequence WHERE name='Incomes';");
+        }
+        else{
+            JSONArray idsToRemove = new JSONArray(removeIncomeJson.getJSONArray("id"));
+            for(int i=0;i<idsToRemove.length();i++) {
+                int id = idsToRemove.optInt(i);
+                PreparedStatement stmt = connection.prepareStatement("DELETE FROM \"Incomes\" WHERE id =?;");
+                stmt.setObject(1,id);
+                stmt.executeUpdate();
+            }
         }
     }
 
