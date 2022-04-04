@@ -106,11 +106,15 @@
     </VBox>
     <VBox fx:id="rightVBox" >
         <HBox minWidth="450" alignment="CENTER">
-            <Label fx:id="budgetLabel" text="Budget: " />
+            <Button fx:id="showPurchasesButton" onAction="#showPurchasesTable">Purchases</Button>
+            <Button fx:id="showIncomesButton" onAction="#showIncomesTable">Incomes</Button>
+        </HBox>
+        <HBox minWidth="450" alignment="CENTER">
+            <Label fx:id="budgetLabel" text="Budget: "/>
             <Label fx:id="budgetAmount">0 zł</Label>
         </HBox>
         <VBox fx:id="purchasesTableViewVBox">
-            <TableView fx:id="purchasesTableView" minHeight="520">
+            <TableView fx:id="purchasesTableView" minHeight="500">
                 <columns>
                     <TableColumn maxWidth="40" minWidth="40" fx:id="selectPurchaseColumn">
                         <cellValueFactory>
@@ -145,8 +149,8 @@
                 </columns>
             </TableView>
         </VBox>
-        <VBox fx:id="incomesTableViewVBox" visible="false" managed="false" alignment="CENTER">
-            <TableView fx:id="incomesTableView">
+        <VBox fx:id="incomesTableViewVBox" visible="false" managed="false" alignment="CENTER" >
+            <TableView fx:id="incomesTableView" minHeight="500">
                 <columns>
                     <TableColumn maxWidth="40" minWidth="40" fx:id="selectIncomeColumn">
                         <cellValueFactory>
@@ -158,12 +162,12 @@
                             <PropertyValueFactory property="id" />
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn text="Date" fx:id="dateIncomeColumn">
+                    <TableColumn text="Date" fx:id="dateIncomeColumn"  resizable="false">
                         <cellValueFactory>
                             <PropertyValueFactory property="date"  />
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn text="Category" minWidth="150" maxWidth="150" fx:id="categoryIncomeColumn" >
+                    <TableColumn text="Category" minWidth="130" maxWidth="130" fx:id="categoryIncomeColumn" >
                         <cellValueFactory>
                             <PropertyValueFactory property="category" />
                         </cellValueFactory>

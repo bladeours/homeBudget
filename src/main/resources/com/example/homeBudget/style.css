@@ -47,7 +47,7 @@
 
 #rightVBox{
     -fx-pref-width: 500px;
-    -fx-padding: 25 12 25 12;
+    -fx-padding: 10 12 25 12;
     -fx-background-color: transparent;
 }
 
@@ -129,7 +129,7 @@
     -fx-min-width: 450;
 }
 #incomesTableView .table-column {
-    -fx-alignment: CENTER;
+    /*-fx-alignment: CENTER;*/
 }
 
 .table-view{
@@ -344,7 +344,22 @@
     -fx-background-color: white ;
 }
 .check-box:selected .mark {
-
     -fx-background-color: #4676f0;
+}
 
+#showIncomesButton, #showPurchasesButton{
+    -fx-background-color: #4676f0;
+    -fx-text-fill: white;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-min-height: 15px;
+    -fx-padding: 0;
+}
+
+#showIncomesButton:hover, #showPurchasesButton:hover{
+    -fx-text-fill: #363636;
+}
+
+#dateIncomeColumn, #categoryIncomeColumn{
+    -fx-alignment: CENTER;
 }

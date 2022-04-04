@@ -1,6 +1,7 @@
 package com.example.homeBudget;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -104,6 +105,10 @@ public class ControllerHomeBudget implements Initializable {
     private TableColumn selectPurchaseColumn;
     @FXML
     private TableColumn selectIncomeColumn;
+    @FXML
+    private Button showPurchasesButton;
+    @FXML
+    private Button showIncomesButton;
     private CheckBox selectAllPurchaseCheckbox;
     private CheckBox selectAllIncomeCheckbox;
     private VBox vBoxStatsAll = new VBox();
@@ -125,6 +130,7 @@ public class ControllerHomeBudget implements Initializable {
         selectAllIncomeCheckbox = new CheckBox();
         try {
             updatePurchaseTable();
+
         }catch (Exception e){
             System.out.println("jest blad " + e);
         }
@@ -142,6 +148,16 @@ public class ControllerHomeBudget implements Initializable {
         incomesTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         purchasesTableView.setEditable(true);
         incomesTableView.setEditable(true);
+        showPurchasesButton.setStyle("-fx-underline: true");
+
+        try {
+            updateIncomesTable();
+            updatePurchaseTable();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         try {
             shopPurchaseColumn.setCellFactory(ComboBoxTableCell.forTableColumn(updateShopList(true)));
             categoryPurchaseColumn.setCellFactory(ComboBoxTableCell.forTableColumn(updatePurchaseCategoryList(true)));
@@ -154,8 +170,6 @@ public class ControllerHomeBudget implements Initializable {
         amountIncomeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         datePurchaseColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         dateIncomeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-
-        updateBudget();
 
         selectAllPurchaseCheckbox.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
@@ -295,17 +309,13 @@ public class ControllerHomeBudget implements Initializable {
         addVBox.setVisible(false);
         purchaseMenu.setVisible(true);
         purchaseMenu.setManaged(true);
-        purchasesTableViewVBox.setVisible(true);
-        purchasesTableViewVBox.setManaged(true);
-        incomesTableViewVBox.setManaged(false);
-        incomesTableViewVBox.setVisible(false);
+        showPurchasesTable();
         updatePurchaseTable();
     }
 
     @FXML
     protected void addPurchase() throws IOException, SQLException {
         //setting GUI
-
         purchaseMenu.setVisible(false);
         purchaseMenu.setManaged(false);
         addVBox.setVisible(true);
@@ -401,9 +411,7 @@ public class ControllerHomeBudget implements Initializable {
         menuVBox.setManaged(false);
         incomeMenu.setManaged(true);
         incomeMenu.setVisible(true);
-        addIncomeVBox.setManaged(false);
-        addIncomeVBox.setVisible(false);
-        rightVBox.getChildren().remove(scrollPaneStats);
+        showIncomesTable();
         updateIncomesTable();
     }
 
@@ -531,6 +539,8 @@ public class ControllerHomeBudget implements Initializable {
         purchasesTableViewVBox.setVisible(false);
         incomesTableViewVBox.setVisible(false);
         incomesTableViewVBox.setManaged(false);
+        scrollPaneStats.setVisible(true);
+        scrollPaneStats.setManaged(true);
         vBoxStatsAll.getChildren().clear();
         scrollPaneStats.setContent(null);
         scrollPaneStats.setVvalue(0);
@@ -829,11 +839,35 @@ public class ControllerHomeBudget implements Initializable {
         }
     }
 
+    @FXML
+    private void showPurchasesTable(){
+        purchasesTableViewVBox.setManaged(true);
+        purchasesTableViewVBox.setVisible(true);
+        incomesTableViewVBox.setVisible(false);
+        incomesTableViewVBox.setManaged(false);
+        scrollPaneStats.setVisible(false);
+        scrollPaneStats.setManaged(false);
+        showPurchasesButton.setStyle("-fx-underline: true");
+        showIncomesButton.setStyle("-fx-underline: false");
+
+    }
+
+    @FXML void showIncomesTable(){
+        incomesTableViewVBox.setVisible(true);
+        incomesTableViewVBox.setManaged(true);
+        purchasesTableViewVBox.setManaged(false);
+        purchasesTableViewVBox.setVisible(false);
+        scrollPaneStats.setVisible(false);
+        scrollPaneStats.setManaged(false);
+        showIncomesButton.setStyle("-fx-underline: true");
+        showPurchasesButton.setStyle("-fx-underline: false");
+
+    }
+
     protected void updatePurchaseTable() throws IOException, SQLException {
         purchasesObservableList.clear();
         JSONObject allPurchaseJson;
         allPurchaseJson = new JSONObject(database.showPurchases());
-
 
         JSONObject purchaseJson;
         Iterator<String> keys = allPurchaseJson.keys();
@@ -865,10 +899,6 @@ public class ControllerHomeBudget implements Initializable {
 
     protected void updateIncomesTable() throws SQLException, IOException {
         selectAllIncomeCheckbox.setSelected(false);
-        incomesTableViewVBox.setVisible(true);
-        incomesTableViewVBox.setManaged(true);
-        purchasesTableViewVBox.setVisible(false);
-        purchasesTableViewVBox.setManaged(false);
         incomesObservableList.clear();
         JSONObject allPurchaseJson;
 
@@ -1005,9 +1035,11 @@ public class ControllerHomeBudget implements Initializable {
 }
 
 
-//TODO change sorting category to "usage sorting"
-//TODO improve removing from table
-//TODO add clearing table
-//TODO change view of combobox in tableView
-//TODO improve removing shop & category (show which rows will be deleted)
-//TODO improve alert while removing
+/*
+TODO change sorting category to "usage sorting"
+TODO change view of combobox in tableView
+TODO improve removing shop & category (show which rows will be deleted)
+TODO improve alert while removing
+TODO improve menu view of adding and removing incomes/purchases
+TODO fix width in tableView
+*/
