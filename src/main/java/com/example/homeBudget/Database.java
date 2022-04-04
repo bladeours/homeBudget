@@ -18,15 +18,15 @@ public class Database {
     private static Connection connection;
     public Database() throws ClassNotFoundException, SQLException {
 
-        File f = new File("db\\shopping.db");
+        File f = new File("db" + File.separator + "shopping.db");
         if(!f.exists()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Connection error");
-            alert.setContentText("Can't connect with database!");
+            alert.setContentText("Can't connect with database!\nThere is no file like db" + File.separator + "shopping.db");
             alert.showAndWait();
         }else{
             Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:db\\shopping.db");
+            connection = DriverManager.getConnection("jdbc:sqlite:db" + File.separator + "shopping.db");
         }
 
     }

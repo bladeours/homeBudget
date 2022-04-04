@@ -323,7 +323,7 @@ public class ControllerHomeBudget implements Initializable {
         purchasesTableView.setVisible(true);
         purchasesTableView.setManaged(true);
         addButton.setText("Add");
-
+        System.out.println(addButton.getFont());
         try{
             categoryList = updatePurchaseCategoryList(false);
             categoryComboBox.setItems(categoryList);
