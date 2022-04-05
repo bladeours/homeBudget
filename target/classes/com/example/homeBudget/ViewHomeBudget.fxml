@@ -116,32 +116,32 @@
         <VBox fx:id="purchasesTableViewVBox">
             <TableView fx:id="purchasesTableView" minHeight="500">
                 <columns>
-                    <TableColumn maxWidth="40" minWidth="40" fx:id="selectPurchaseColumn">
+                    <TableColumn maxWidth="40" minWidth="40" fx:id="selectPurchaseColumn" resizable="false">
                         <cellValueFactory>
                             <PropertyValueFactory property="select" />
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn maxWidth="40" minWidth="40" text="ID">
+                    <TableColumn maxWidth="40" minWidth="40" text="ID" resizable="false">
                         <cellValueFactory>
                             <PropertyValueFactory property="id" />
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn text="Date" fx:id="datePurchaseColumn">
+                    <TableColumn prefWidth="84" text="Date" fx:id="datePurchaseColumn" resizable="false">
                         <cellValueFactory>
                             <PropertyValueFactory property="date" />
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn text="Shop" fx:id="shopPurchaseColumn">
+                    <TableColumn prefWidth="105" text="Shop" fx:id="shopPurchaseColumn" resizable="false">
                         <cellValueFactory>
                             <PropertyValueFactory property="shop" />
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn prefWidth="84.0" text="Category" fx:id="categoryPurchaseColumn">
+                    <TableColumn prefWidth="105" text="Category" fx:id="categoryPurchaseColumn" resizable="false">
                         <cellValueFactory>
                             <PropertyValueFactory property="category" />
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn maxWidth="60" minWidth="60" text="Price" fx:id="pricePurchaseColumn">
+                    <TableColumn maxWidth="60" minWidth="60" text="Price" fx:id="pricePurchaseColumn" resizable="false">
                         <cellValueFactory>
                             <PropertyValueFactory property="price" />
                         </cellValueFactory>
@@ -152,12 +152,12 @@
         <VBox fx:id="incomesTableViewVBox" visible="false" managed="false" alignment="CENTER" >
             <TableView fx:id="incomesTableView" minHeight="500">
                 <columns>
-                    <TableColumn maxWidth="40" minWidth="40" fx:id="selectIncomeColumn">
+                    <TableColumn maxWidth="40" minWidth="40" fx:id="selectIncomeColumn" resizable="false">
                         <cellValueFactory>
                             <PropertyValueFactory property="select" />
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn maxWidth="40" minWidth="40" text="ID">
+                    <TableColumn maxWidth="40" minWidth="40" text="ID" resizable="false">
                         <cellValueFactory>
                             <PropertyValueFactory property="id" />
                         </cellValueFactory>
@@ -167,12 +167,12 @@
                             <PropertyValueFactory property="date"  />
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn text="Category" minWidth="130" maxWidth="130" fx:id="categoryIncomeColumn" >
+                    <TableColumn text="Category" minWidth="130" maxWidth="130" fx:id="categoryIncomeColumn" resizable="false">
                         <cellValueFactory>
                             <PropertyValueFactory property="category" />
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn maxWidth="90" minWidth="90" text="Amount" fx:id="amountIncomeColumn">
+                    <TableColumn maxWidth="90" minWidth="90" text="Amount" fx:id="amountIncomeColumn" resizable="false">
                         <cellValueFactory>
                             <PropertyValueFactory property="amount" />
                         </cellValueFactory>

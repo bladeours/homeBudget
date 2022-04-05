@@ -153,9 +153,7 @@ public class ControllerHomeBudget implements Initializable {
         try {
             updateIncomesTable();
             updatePurchaseTable();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
         try {
@@ -411,6 +409,8 @@ public class ControllerHomeBudget implements Initializable {
         menuVBox.setManaged(false);
         incomeMenu.setManaged(true);
         incomeMenu.setVisible(true);
+        addIncomeVBox.setManaged(false);
+        addIncomeVBox.setVisible(false);
         showIncomesTable();
         updateIncomesTable();
     }
@@ -601,9 +601,11 @@ public class ControllerHomeBudget implements Initializable {
             settingsScrollPane.setManaged(false);
         }
         else{
+            System.out.println(sourceButton.getParent());
             sourceButton.getParent().setVisible(false);
             sourceButton.getParent().setManaged(false);
         }
+        System.out.println(sourceButton.getParent());
         menuVBox.setVisible(true);
         menuVBox.setManaged(true);
     }
@@ -1041,5 +1043,4 @@ TODO change view of combobox in tableView
 TODO improve removing shop & category (show which rows will be deleted)
 TODO improve alert while removing
 TODO improve menu view of adding and removing incomes/purchases
-TODO fix width in tableView
 */
