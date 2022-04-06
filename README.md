@@ -40,7 +40,7 @@ At this moment there is only version for Windows but in the near future I'll add
 **Add new shop**
 <br>
 * Just write name of the new shop in "New shop" text-field, this text-field has bigger priority than list with shops. 
-<br>
+
 ![img.png](img/img.png)
 
 
