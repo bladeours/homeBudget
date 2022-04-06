@@ -74,7 +74,7 @@ public class Purchases {
 
     @Override
     public String toString() {
-        return id.get() + "\t" + date.get() + "\t" + shop.get() + "\t" + category.get() +  "\t " +
-                price.get();
+        return id.get() + "\t" + date.get() + "\t" + String.format("%15s",shop.get())  + "\t" + String.format("%15s",category.get())
+                +  "\t " + price.get();
     }
 }

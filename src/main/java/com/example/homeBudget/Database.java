@@ -208,30 +208,55 @@ public class Database {
         stmt.executeUpdate("INSERT INTO \"Categories\" (name) VALUES ('" + category + "');");
     }
 
-    public void removePurchaseCategory(String category) throws SQLException {
+    public String removePurchaseCategory(String category, boolean remove) throws SQLException {
         Statement stmt = connection.createStatement();
         Statement stmt2 = connection.createStatement();
         ResultSet result = stmt.executeQuery("SELECT \"Purchases\".id, \"Categories\".name AS category\n" +
                 "FROM \"Purchases\"\n" +
                 "         INNER JOIN \"Categories\" on \"Categories\".id = \"Purchases\".category_id\n" +
                 "where Categories.name='"+ category +"';");
-        while (result.next()){
-            stmt2.executeUpdate("DELETE from \"Purchases\" where id="+result.getInt("id")+";");
+        if(remove){
+            while (result.next()){
+                stmt2.executeUpdate("DELETE from \"Purchases\" where id="+result.getInt("id")+";");
+            }
+            stmt.executeUpdate("DELETE from \"Categories\" where name='"+ category +"'");
+            return null;
         }
-        stmt.executeUpdate("DELETE from \"Categories\" where name='"+ category +"'");
+        else {
+            JSONObject purchasesToRemove = new JSONObject();
+            JSONArray idsToRemove = new JSONArray();
+            while (result.next()){
+                idsToRemove.put(result.getInt("id"));
+            }
+            purchasesToRemove.put("idsToRemove",idsToRemove);
+            return purchasesToRemove.toString();
+        }
     }
 
-    public void removeShop(String shop) throws SQLException{
+    public String removeShop(String shop, boolean remove) throws SQLException{
         Statement stmt = connection.createStatement();
         Statement stmt2 = connection.createStatement();
-        ResultSet result = stmt.executeQuery("SELECT \"Purchases\".id, \"Shops\".name AS category\n" +
+        ResultSet result = stmt.executeQuery("SELECT \"Purchases\".id, \"Shops\".name\n" +
                 "FROM \"Purchases\"\n" +
                 "         INNER JOIN \"Shops\" on \"Shops\".id = \"Purchases\".shop_id\n" +
                 "where Shops.name='"+ shop +"';");
-        while (result.next()){
-            stmt2.executeUpdate("DELETE from \"Purchases\" where id="+result.getInt("id")+";");
+        if(remove){
+            while (result.next()){
+                stmt2.executeUpdate("DELETE from \"Purchases\" where id="+result.getInt("id")+";");
+            }
+            stmt.executeUpdate("DELETE from \"Shops\" where name='"+ shop +"'");
+            return null;
         }
-        stmt.executeUpdate("DELETE from \"Shops\" where name='"+ shop +"'");
+        else{
+            JSONObject purchasesToRemove = new JSONObject();
+            JSONArray idsToRemove = new JSONArray();
+            while (result.next()){
+                idsToRemove.put(result.getInt("id"));
+            }
+            purchasesToRemove.put("idsToRemove",idsToRemove);
+            return purchasesToRemove.toString();
+        }
+
     }
 
     public void editPurchase(String toEdit) throws SQLException {
@@ -335,17 +360,29 @@ public class Database {
         stmt.executeUpdate("INSERT INTO \"IncomeCategories\" (name) VALUES ('" + category + "');");
     }
 
-    public void removeIncomeCategory (String category) throws SQLException {
+    public String removeIncomeCategory (String category, boolean remove) throws SQLException {
         Statement stmt = connection.createStatement();
         Statement stmt2 = connection.createStatement();
         ResultSet result = stmt.executeQuery("SELECT \"Incomes\".id, \"IncomeCategories\".name AS category\n" +
                 "FROM \"Incomes\"\n" +
                 "         INNER JOIN \"IncomeCategories\" on \"IncomeCategories\".id = \"Incomes\".category_id\n" +
                 "where category='"+ category +"';");
-        while (result.next()){
-            stmt2.executeUpdate("DELETE from \"Incomes\" where id="+result.getInt("id")+";");
+        if(remove){
+            while (result.next()){
+                stmt2.executeUpdate("DELETE from \"Incomes\" where id="+result.getInt("id")+";");
+            }
+            stmt.executeUpdate("DELETE from \"IncomeCategories\" where name='"+ category +"'");
+            return null;
+        }else{
+            JSONObject incomesToRemove = new JSONObject();
+            JSONArray idsToRemove = new JSONArray();
+            while (result.next()){
+                idsToRemove.put(result.getInt("id"));
+            }
+            incomesToRemove.put("idsToRemove",idsToRemove);
+            return incomesToRemove.toString();
         }
-        stmt.executeUpdate("DELETE from \"IncomeCategories\" where name='"+ category +"'");
+
     }
 
     public String showIncomes() throws SQLException {
@@ -408,5 +445,6 @@ public class Database {
         stmt.setObject(1,newValue);
         stmt.executeUpdate();
     }
+
 }
 

@@ -62,7 +62,7 @@ public class Incomes {
 
     @Override
     public String toString() {
-        return getId() + "\t" + getDate()  + "\t" + getCategory() +  "\t " +
+        return getId() + "\t" + getDate()  + "\t" + String.format("%15s",getCategory()) +  "\t " +
                     getAmount();
     }
 }
