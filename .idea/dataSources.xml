@@ -9,5 +9,12 @@
       <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/db/shopping.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="shoppingProd" uuid="a7e90970-19fd-4ff0-850d-fb24b42723ae">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/../installer/db/shopping.db</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>
