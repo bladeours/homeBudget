@@ -43,11 +43,11 @@ At this moment there is only version for Windows but in the near future I'll add
 
 ## Room for Improvement
 **To do:**
-* add more statistics
-* add status of gas, water and electricity maters
-* add exporting to CSV 
-* add possibility to change currency
-* add support for different years
+* Add more statistics.
+* Add status of gas, water and electricity maters.
+* Add exporting to CSV.
+* Add possibility to change currency.
+* Add support for different years.
 
 
 
