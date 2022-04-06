@@ -8,11 +8,6 @@ Simple app to organise your home budget.
 * [Room for Improvement](#room-for-improvement)
 
 ## General Info
- At the beginning it was a university project, but I thought that I could develop this project and learn more new things because I'd like to be a Java Developer.
-
-* [Room for Improvement](#room-for-improvement)
-
-## General Info
  at the beginning it was a university project, but I thought that I could develop this project and learn more new things because I'd like to be a Java Developer.
  With this program, you will manage your household expenses. At this moment you can add purchases and incomes but in future you will be able to add
 the status of the gas, water or electricity meters and check useful charts and statistics.
